@@ -1,0 +1,22 @@
+[
+  {
+    "Paste volume per aperture": {
+      "below_lsl": 0,
+      "above_usl": 41
+    },
+    "Stencil thickness": {
+      "below_lsl": 10,
+      "above_usl": 16
+    },
+    "Paste viscosity": {
+      "below_lsl": 15,
+      "above_usl": 17
+    },
+    "Ambient RH": {
+      "below_lsl": 18,
+      "above_usl": 11
+    },
+    "seed": 41,
+    "count": 9
+  }
+]
