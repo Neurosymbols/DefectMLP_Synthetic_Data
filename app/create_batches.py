@@ -37,16 +37,16 @@ for batch_id in range(40):
 # Combine
 df_all = pd.concat(all_batches, ignore_index=True)
 
-# Verify
-print(f"\nTotal boards: {len(df_all)}")
-print(f"Expected defects:")
-print(f"  Opens: ~{int(200000 * 0.0125)} (target: 1000+)")
-print(f"  Bridging: ~{int(200000 * 0.0109)} (target: 1000+)")
-print("\nActual distribution:")
-print(df_all['Defect'].value_counts())
+# # Verify
+# print(f"\nTotal boards: {len(df_all)}")
+# print(f"Expected defects:")
+# print(f"  Opens: ~{int(200000 * 0.0125)} (target: 1000+)")
+# print(f"  Bridging: ~{int(200000 * 0.0109)} (target: 1000+)")
+# print("\nActual distribution:")
+# print(df_all['Defect'].value_counts())
 
 # Save
-df_all.to_csv("training_data_200k_v2.csv", index=False)
+df_all.to_csv("training_data_200k_v4.csv", index=False)
 '''
 
 ---

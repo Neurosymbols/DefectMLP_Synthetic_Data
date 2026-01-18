@@ -167,38 +167,39 @@ def sample_with_drift_and_cycles(**kwargs):
     mech_causes = np.full(n_samples, "", dtype=object)
     root_causes = np.full(n_samples, "", dtype=object)
     out_of_spec = {}
-    
-    for i, param_key in enumerate(param_keys):
-        param_info = PROCESS_PARAMETERS[param_key]
-        param_samples = samples[param_key]
+    if OUTPUT_CONFIG['perform_labelling']:
         
-        out_of_spec[param_key] = {
-            "below_lsl": int(np.sum(param_samples < param_info['LSL'])),
-            "above_usl": int(np.sum(param_samples > param_info['USL']))
-        }
+        for i, param_key in enumerate(param_keys):
+            param_info = PROCESS_PARAMETERS[param_key]
+            param_samples = samples[param_key]
+            
+            out_of_spec[param_key] = {
+                "below_lsl": int(np.sum(param_samples < param_info['LSL'])),
+                "above_usl": int(np.sum(param_samples > param_info['USL']))
+            }
+            
+            param_high_mask = param_samples > param_info['USL']
+            param_low_mask = param_samples < param_info['LSL']
+            
+            # Mechanism causes (paste volume only)
+            if param_key.lower() == "paste volume per aperture":
+                mech_causes[param_high_mask] = f"{param_key} high"
+                mech_causes[param_low_mask] = f"{param_key} low"
+            # Root causes (all other parameters)
+            else:
+                root_causes[param_high_mask] = np.char.add(
+                    np.where(root_causes[param_high_mask] == "", "", root_causes[param_high_mask] + "; "),
+                    f"{param_key} high"
+                )
+                root_causes[param_low_mask] = np.char.add(
+                    np.where(root_causes[param_low_mask] == "", "", root_causes[param_low_mask] + "; "),
+                    f"{param_key} low"
+                )
         
-        param_high_mask = param_samples > param_info['USL']
-        param_low_mask = param_samples < param_info['LSL']
-        
-        # Mechanism causes (paste volume only)
-        if param_key.lower() == "paste volume per aperture":
-            mech_causes[param_high_mask] = f"{param_key} high"
-            mech_causes[param_low_mask] = f"{param_key} low"
-        # Root causes (all other parameters)
-        else:
-            root_causes[param_high_mask] = np.char.add(
-                np.where(root_causes[param_high_mask] == "", "", root_causes[param_high_mask] + "; "),
-                f"{param_key} high"
-            )
-            root_causes[param_low_mask] = np.char.add(
-                np.where(root_causes[param_low_mask] == "", "", root_causes[param_low_mask] + "; "),
-                f"{param_key} low"
-            )
-    
-    samples['mech causes'] = mech_causes
-    samples['root causes'] = root_causes
+        samples['mech causes'] = mech_causes
+        samples['root causes'] = root_causes
 
-    samples = assign_mech_labels(samples, PROCESS_PARAMETERS)
+        samples = assign_mech_labels(samples, PROCESS_PARAMETERS)
 
     # ========================================================================
     # STEP 5: Create DataFrame with metadata
@@ -225,7 +226,7 @@ def sample_with_drift_and_cycles_and_defects(
     Enhanced generator that includes defect labels
     """
     if kwargs.get("n_samples") is None:
-        n_samples = get_sample_size('target')
+        n_samples = get_sample_size('default')
         kwargs["n_samples"] = n_samples
     # Generate base data (your existing function)
     df, out_of_spec, seed = sample_with_drift_and_cycles(**kwargs)
@@ -235,7 +236,8 @@ def sample_with_drift_and_cycles_and_defects(
     # ========================================================================
     
     # Approach 1: Hard labels
-    df = assign_defects_to_dataframe(df, PROCESS_PARAMETERS, random_seed=seed)
+    if OUTPUT_CONFIG['perform_labelling']:
+        df = assign_defects_to_dataframe(df, PROCESS_PARAMETERS, random_seed=seed)
         
     # ========================================================================
     # Statistics
@@ -247,7 +249,7 @@ if __name__ == "__main__":
     df, oos = sample_with_drift_and_cycles_and_defects()
     
     # Save to CSV
-    version = 8
+    version = 13
     filename = OUTPUT_CONFIG['csv_filename'].format(version=version)
     df.to_csv(filename, index=False)
     

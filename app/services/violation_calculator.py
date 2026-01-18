@@ -138,17 +138,8 @@ def calculate_all_parameter_risks(row: pd.Series,
     """
     risks = {}
     
-    # Parameter name mapping (column name -> risk key prefix)
-    param_mapping = {
-        "Paste volume per aperture": "paste_volume",
-        "Stencil thickness": "stencil",
-        "Paste viscosity": "viscosity",
-        "Ambient RH": "rh",
-        "Ambient temperature": "temp"
-    }
-    
     # Loop through all parameters
-    for param_name, risk_key in param_mapping.items():
+    for param_name in process_parameters.keys():
         param_info = process_parameters[param_name]
         value = row[param_name]
         nominal = param_info['NV']
@@ -157,15 +148,15 @@ def calculate_all_parameter_risks(row: pd.Series,
         # Determine direction based on value
         if value > nominal:
             # High direction
-            risks[f'{risk_key}_high'] = _calculate_risk_probability(
+            risks[f'high {param_name.lower()}'] = _calculate_risk_probability(
                 value, nominal, param_info['USL'], tolerance, 'high'
             )
-            risks[f'{risk_key}_low'] = 0.01
+            risks[f'low {param_name.lower()}'] = 0.01
         else:
             # Low direction
-            risks[f'{risk_key}_low'] = _calculate_risk_probability(
+            risks[f'low {param_name.lower()}'] = _calculate_risk_probability(
                 value, nominal, param_info['LSL'], tolerance, 'low'
             )
-            risks[f'{risk_key}_high'] = 0.01
+            risks[f'high {param_name.lower()}'] = 0.01
     
     return risks

@@ -10,8 +10,9 @@ Each parameter should be justified with citations for dissertation.
 # ============================================================================
 
 RISK_CONFIG = {
+    'high_risk_threshold': 0.65,     # [NEEDS CITATION] - Threshold for high-risk zone
     'mechanism_threshold': 0.70,     # Threshold to fire mechanism
-    'defect_mode': 'probabilistic',  # 'probabilistic' or 'threshold'
+    'defect_mode': 'direct',  # 'probabilistic' or 'threshold'
     'defect_threshold': 0.65,        # For threshold mode
     
     # Justification:
@@ -21,7 +22,7 @@ RISK_CONFIG = {
 }
 
 ASSIGNMENT_CONFIG = {
-    'mode': 'threshold',    # Options: 'probabilistic' or 'threshold'
+    'mode': 'direct',    # Options: 'probabilistic' or 'threshold'
     'threshold': 0.65,           # [NEEDS CITATION] - Threshold for defect occurrence
     
     # Mode descriptions:
@@ -75,7 +76,7 @@ TEMPORAL_CONFIG = {
 # ============================================================================
 
 SAMPLE_SIZE_CONFIG = {
-    'default_samples': 5120,             # [NEEDS CITATION] - Default dataset size
+    'default_samples': 5000,             # [NEEDS CITATION] - Default dataset size
     'target_samples': 80000,             # [NEEDS CITATION] - Target for ML training
     
     # Calculation basis:
@@ -159,6 +160,7 @@ OUTPUT_CONFIG = {
     'csv_filename': 'synthetic_data_with_temporal_patterns_x2-{version}.csv',
     'include_metadata': True,            # Include board_number, hour_of_day, etc.
     'include_probabilities': True,       # Include Defect_Probability column
+    'perform_labelling': False,
     
     'columns_order': [
         # Process parameters

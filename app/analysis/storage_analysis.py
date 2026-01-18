@@ -188,7 +188,7 @@ def analyze_and_convert_to_document(df: pd.DataFrame, metadata: dict = None):
 if __name__ == "__main__":
     # Load data
     # df = pd.read_csv("synthetic_data_with_temporal_patterns_x2-8.csv")
-    df = pd.read_csv("training_data_200k_v2.csv")
+    df = pd.read_csv("training_data_200k_v3.csv")
     
     # Metadata for this run
     metadata = {

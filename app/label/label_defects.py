@@ -4,6 +4,7 @@ Probabilistic defect assignment for synthetic data generation
 Two assignment modes:
 1. Probabilistic (random sampling) - Default, more realistic
 2. Threshold-based (deterministic) - Simpler, interpretable
+3. Direct (mechanism → defect) - Simple rule-based
 """
 
 import pandas as pd
@@ -139,6 +140,44 @@ def assign_defect_threshold(row,
     return "No Defect"
 
 # ============================================================================
+# OPTION 3: DIRECT MECHANISM-TO-DEFECT
+# ============================================================================
+
+def assign_defect_direct(row):
+    """
+    Direct assignment: Mechanism fires → Defect fires (100%)
+    
+    Simplest approach - no probability calculation needed.
+    If mechanism is present, defect always occurs.
+    
+    Example:
+        aperture overfill present → Solder Bridging (always)
+        poor paste transfer present → Open Circuit (always)
+        no mechanism → No Defect
+    
+    Args:
+        row: DataFrame row with 'mech causes' column
+    
+    Returns:
+        Defect label: "No Defect", "Open Circuit", or "Solder Bridging"
+    """
+    mech_str = row.get('mech causes', '')
+    
+    if pd.isna(mech_str) or mech_str == "":
+        return "No Defect"
+    
+    mech_str = str(mech_str).lower()
+    
+    # Direct mapping: mechanism → defect
+    if "paste volume per aperture high" in mech_str or "aperture overfill" in mech_str:
+        return "Solder Bridging"
+    
+    elif "paste volume per aperture low" in mech_str or "poor paste transfer" in mech_str:
+        return "Open Circuit"
+    
+    return "No Defect"
+
+# ============================================================================
 # UNIFIED INTERFACE
 # ============================================================================
 
@@ -174,6 +213,8 @@ def assign_defect_from_probability(row,
         return assign_defect_probabilistic(row, process_parameters, random_seed)
     elif mode == 'threshold':
         return assign_defect_threshold(row, process_parameters, threshold)
+    elif mode == 'direct':
+        return assign_defect_direct(row)
     else:
         raise ValueError(f"Unknown mode: {mode}. Use 'probabilistic' or 'threshold'")
 
