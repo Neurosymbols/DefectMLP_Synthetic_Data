@@ -8,7 +8,8 @@ from .helpers.npd import nearest_positive_definite
 from .services.stencil_thickness_drift import get_stencil_thickness_drift
 from .services.sinusoidal_temp import temperature_diurnal_cycle
 from .label.label_defects import assign_defects_to_dataframe
-from .label.label_mechs import assign_mech_labels
+from .label.label_mechs_latest import assign_mech_labels_latest
+from .label.label_parameter_viols import create_parameter_risk_labels
 from .config.parameter_config import PROCESS_PARAMETERS
 from .config.generator_config import (
     OUTPUT_CONFIG,
@@ -54,18 +55,25 @@ def sample_with_drift_and_cycles(**kwargs):
     #get correlations
     corr_matrix = config.get('corr_matrix')
 
+    corr_2 = np.eye(2)
+    corr_matrix = np.block([
+        [corr_matrix, np.zeros((5, 2))],
+        [np.zeros((2, 5)), corr_2]
+    ])
+
     if random_seed is not None:
         np.random.seed(random_seed)
     
     # Ensure positive definite
     corr_matrix = nearest_positive_definite(corr_matrix)
+    assert corr_matrix.shape[0] == len(PROCESS_PARAMETERS)
 
     # ========================================================================
     # STEP 1: Generate correlated standard normals (anomalies/fluctuations)
     # ========================================================================
     
     L = np.linalg.cholesky(corr_matrix)
-    z = np.random.randn(n_samples, 5)  # 5 parameters
+    z = np.random.randn(n_samples, len(PROCESS_PARAMETERS))  # 5 parameters
     correlated_normals = z.dot(L.T)  # Correlated standard normals
     
     # Convert to uniform [0,1] via CDF
@@ -160,46 +168,41 @@ def sample_with_drift_and_cycles(**kwargs):
     ambient_temperature = temp_baseline + temp_fluctuation
     samples["Ambient temperature"] = ambient_temperature
 
+    # --- Peak reflow temperature (index 5) ---
+    peak_temp_info = PROCESS_PARAMETERS["Peak reflow temperature"]
+    peak_temp = norm.ppf(
+        u[:, 5],
+        loc=peak_temp_info['NV'],
+        scale=peak_temp_info['tolerance'] / peak_temp_info['x']
+    )
+    samples["Peak reflow temperature"] = peak_temp
+
+    # --- Time above liquidus (index 6) ---
+    tal_info = PROCESS_PARAMETERS["Time above liquidus"]
+    tal = norm.ppf(
+        u[:, 6],
+        loc=tal_info['NV'],
+        scale=tal_info['tolerance'] / tal_info['x']
+    )
+    samples["Time above liquidus"] = tal
+
     # ========================================================================
     # STEP 4: Identify out-of-spec conditions and create labels
     # ========================================================================
     
     mech_causes = np.full(n_samples, "", dtype=object)
-    root_causes = np.full(n_samples, "", dtype=object)
     out_of_spec = {}
     if OUTPUT_CONFIG['perform_labelling']:
-        
         for i, param_key in enumerate(param_keys):
             param_info = PROCESS_PARAMETERS[param_key]
             param_samples = samples[param_key]
-            
             out_of_spec[param_key] = {
                 "below_lsl": int(np.sum(param_samples < param_info['LSL'])),
                 "above_usl": int(np.sum(param_samples > param_info['USL']))
             }
-            
-            param_high_mask = param_samples > param_info['USL']
-            param_low_mask = param_samples < param_info['LSL']
-            
-            # Mechanism causes (paste volume only)
-            if param_key.lower() == "paste volume per aperture":
-                mech_causes[param_high_mask] = f"{param_key} high"
-                mech_causes[param_low_mask] = f"{param_key} low"
-            # Root causes (all other parameters)
-            else:
-                root_causes[param_high_mask] = np.char.add(
-                    np.where(root_causes[param_high_mask] == "", "", root_causes[param_high_mask] + "; "),
-                    f"{param_key} high"
-                )
-                root_causes[param_low_mask] = np.char.add(
-                    np.where(root_causes[param_low_mask] == "", "", root_causes[param_low_mask] + "; "),
-                    f"{param_key} low"
-                )
-        
         samples['mech causes'] = mech_causes
-        samples['root causes'] = root_causes
-
-        samples = assign_mech_labels(samples, PROCESS_PARAMETERS)
+        samples = assign_mech_labels_latest(samples, PROCESS_PARAMETERS)
+        samples = create_parameter_risk_labels(samples, PROCESS_PARAMETERS)
 
     # ========================================================================
     # STEP 5: Create DataFrame with metadata
@@ -249,7 +252,7 @@ if __name__ == "__main__":
     df, oos = sample_with_drift_and_cycles_and_defects()
     
     # Save to CSV
-    version = 13
+    version = 14
     filename = OUTPUT_CONFIG['csv_filename'].format(version=version)
     df.to_csv(filename, index=False)
     

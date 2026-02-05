@@ -175,6 +175,12 @@ def assign_defect_direct(row):
     elif "paste volume per aperture low" in mech_str or "poor paste transfer" in mech_str:
         return "Open Circuit"
     
+    elif "peak reflow temperature high" in mech_str or "time above liquidus high" in mech_str:
+        return "Solder Bridging"
+    
+    elif "peak reflow temperature low" in mech_str or "time above liquidus low" in mech_str:
+        return "Open Circuit"
+    
     return "No Defect"
 
 # ============================================================================

@@ -4,6 +4,7 @@ Synthetic Data Generator Configuration
 All temporal and generation parameters are configurable here.
 Each parameter should be justified with citations for dissertation.
 """
+from app.config.parameter_config import PROCESS_PARAMETERS
 
 # ============================================================================
 # DEFECT ASSIGNMENT MODE
@@ -155,32 +156,28 @@ CORRELATION_JUSTIFICATIONS = {
 # ============================================================================
 # OUTPUT CONFIGURATION
 # ============================================================================
+def get_output_columns_order():
+    columns = []
+    label_columns = [
+        'mech causes',
+        'root causes',
+        'Defect',
+        'Defect_Probability', 
+        'Solder Printing Mechanism', 
+        'Reflow Mechanism'
+    ]
+    label_columns = label_columns + [f"{k} risk" for k in PROCESS_PARAMETERS.keys()]
+    metadata_columns = ['board_number','hour_of_day','stencil_batch']
+    columns = columns + list(PROCESS_PARAMETERS.keys()) + label_columns + metadata_columns
+    return columns
 
 OUTPUT_CONFIG = {
     'csv_filename': 'synthetic_data_with_temporal_patterns_x2-{version}.csv',
     'include_metadata': True,            # Include board_number, hour_of_day, etc.
     'include_probabilities': True,       # Include Defect_Probability column
-    'perform_labelling': False,
-    
-    'columns_order': [
-        # Process parameters
-        'Paste volume per aperture',
-        'Stencil thickness',
-        'Paste viscosity',
-        'Ambient RH',
-        'Ambient temperature',
-        # Labels
-        'mech causes',
-        'root causes',
-        'Defect',
-        'Defect_Probability',
-        # Metadata
-        'board_number',
-        'hour_of_day',
-        'stencil_batch'
-    ]
+    'perform_labelling': True,
+    'columns_order': get_output_columns_order()
 }
-
 
 # ============================================================================
 # CITATION REQUIREMENTS

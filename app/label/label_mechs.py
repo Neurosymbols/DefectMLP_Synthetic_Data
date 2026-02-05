@@ -19,6 +19,8 @@ def assign_mech_labels(samples, process_parameters):
     stencil_thickness_vals = samples["Stencil thickness"]
     paste_viscosity_vals = samples["Paste viscosity"]
     ambient_rh_vals = samples["Ambient RH"]
+    peak_reflow_temp_vals = samples["Peak reflow temperature"]
+    tal_vals = samples['Time above liquidus']
     mech_causes = samples['mech causes']
     
     # Get number of samples
@@ -28,6 +30,8 @@ def assign_mech_labels(samples, process_parameters):
     thick_info = process_parameters["Stencil thickness"]
     visc_info = process_parameters["Paste viscosity"]
     rh_info = process_parameters["Ambient RH"]
+    reflow_info = process_parameters["Peak reflow temperature"]
+    tal_info = process_parameters["Time above liquidus"]
 
     # Define mechanism rules
     mechanism_rules = [
@@ -51,6 +55,22 @@ def assign_mech_labels(samples, process_parameters):
                 # Rule 4: AmbientRh < LSL AND PasteViscosity > USL
                 lambda: (ambient_rh_vals < rh_info['LSL']) & 
                        (paste_viscosity_vals > visc_info['USL'])
+            ]
+        },
+        {
+            'name': 'Excess Reflow Spreading',
+            'conditions': [
+                # Rule 5: PeakReflowTemperature > USL OR TimeAboveLiquidus > USL
+                lambda: (peak_reflow_temp_vals > reflow_info['USL']) | 
+                       (tal_vals > tal_info['USL'])
+            ]
+        },
+        {
+            'name': 'Non Coalescence',
+            'conditions': [
+                # Rule 6: PeakReflowTemperature < LSL OR TimeAboveLiquidus > LSL    
+                lambda: (peak_reflow_temp_vals < reflow_info['LSL']) | 
+                       (tal_vals < tal_info['LSL'])
             ]
         }
     ]

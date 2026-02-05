@@ -38,5 +38,19 @@ PROCESS_PARAMETERS = {
         "USL": 26, 
         "LSL": 20, 
         "x": 2.3
+    },
+    "Peak reflow temperature": {
+        "NV": 255,
+        "tolerance": 5,
+        "USL": 260,
+        "LSL": 250,
+        "x": 2.3
+    },
+    "Time above liquidus": {
+        "NV": 60,
+        "tolerance": 15,
+        "USL": 75,
+        "LSL": 45,
+        "x": 2.3
     }
 }

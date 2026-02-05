@@ -95,7 +95,7 @@ def analyze_and_convert_to_document(df: pd.DataFrame, metadata: dict = None):
     # ========================================================================
     
     df_analysis = df.copy()
-    all_mechanisms = ['aperture overfill', 'poor paste transfer']
+    all_mechanisms = ['aperture overfill', 'poor paste transfer', 'excess reflow spreading', 'non coalescence']
     
     mechanism_relationships = {}
     for mech in all_mechanisms:
@@ -188,11 +188,11 @@ def analyze_and_convert_to_document(df: pd.DataFrame, metadata: dict = None):
 if __name__ == "__main__":
     # Load data
     # df = pd.read_csv("synthetic_data_with_temporal_patterns_x2-8.csv")
-    df = pd.read_csv("training_data_200k_v3.csv")
+    df = pd.read_csv("training_data_200k_v4.csv")
     
     # Metadata for this run
     metadata = {
-        'version': '2.7',
+        'version': '2.8',
         'n_samples': len(df),
         'description': 'Probabilistic defect assignment test'
     }

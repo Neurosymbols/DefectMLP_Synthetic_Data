@@ -124,8 +124,10 @@ def _calculate_risk_probability(value: float,
     
     return probability
 
-def calculate_all_parameter_risks(row: pd.Series, 
-                                  process_parameters: Dict) -> Dict[str, float]:
+def calculate_all_parameter_risks(
+    samples: dict,
+    index: int, 
+    process_parameters: Dict) -> Dict[str, float]:
     """
     Calculate risk probabilities for all parameters
     
@@ -141,7 +143,7 @@ def calculate_all_parameter_risks(row: pd.Series,
     # Loop through all parameters
     for param_name in process_parameters.keys():
         param_info = process_parameters[param_name]
-        value = row[param_name]
+        value = samples[param_name][index]
         nominal = param_info['NV']
         tolerance = param_info['tolerance']
         
