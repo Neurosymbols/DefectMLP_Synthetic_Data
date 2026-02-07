@@ -169,18 +169,12 @@ def assign_defect_direct(row):
     mech_str = str(mech_str).lower()
     
     # Direct mapping: mechanism → defect
-    if "paste volume per aperture high" in mech_str or "aperture overfill" in mech_str:
+    if "excess reflow spreading" in mech_str or "aperture overfill" in mech_str:
         return "Solder Bridging"
     
-    elif "paste volume per aperture low" in mech_str or "poor paste transfer" in mech_str:
+    elif "non coalescence" in mech_str or "poor paste transfer" in mech_str:
         return "Open Circuit"
-    
-    elif "peak reflow temperature high" in mech_str or "time above liquidus high" in mech_str:
-        return "Solder Bridging"
-    
-    elif "peak reflow temperature low" in mech_str or "time above liquidus low" in mech_str:
-        return "Open Circuit"
-    
+
     return "No Defect"
 
 # ============================================================================
