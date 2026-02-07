@@ -1,0 +1,225 @@
+{
+  "_id": {
+    "$oid": "6986f719f30623e1ab685f3b"
+  },
+  "timestamp": {
+    "$date": "2026-02-07T08:26:01.442Z"
+  },
+  "total_samples": 200000,
+  "metadata": {
+    "version": "2.8",
+    "n_samples": 200000,
+    "description": "Probabilistic defect assignment test"
+  },
+  "defect_distribution": {
+    "counts": {
+      "No Defect": 175420,
+      "Solder Bridging": 12569,
+      "Open Circuit": 12011
+    },
+    "percentages": {
+      "No Defect": 87.71,
+      "Solder Bridging": 6.2844999999999995,
+      "Open Circuit": 6.0055
+    }
+  },
+  "mechanism_distribution": {
+    "raw_combinations": {
+      "aperture overfill": 8154,
+      "poor paste transfer": 7988,
+      "excess reflow spreading": 3903,
+      "non coalescence": 3842,
+      "aperture overfill; non coalescence": 186,
+      "poor paste transfer; non coalescence": 181,
+      "poor paste transfer; excess reflow spreading": 174,
+      "aperture overfill; excess reflow spreading": 152
+    },
+    "individual_counts": {
+      "aperture overfill": 8492,
+      "excess reflow spreading": 4229,
+      "poor paste transfer": 8343,
+      "non coalescence": 4209
+    },
+    "multiple_mechanisms_count": 693,
+    "multiple_mechanisms_pct": 0.34650000000000003
+  },
+  "parameter_violations": {
+    "Paste volume per aperture": {
+      "LSL": 0.036,
+      "USL": 0.044,
+      "below_lsl": 2142,
+      "above_usl": 2187,
+      "total_violations": 4329,
+      "pct_below_lsl": 1.0710000000000002,
+      "pct_above_usl": 1.0935000000000001,
+      "pct_total": 2.1645000000000003
+    },
+    "Stencil thickness": {
+      "LSL": 95,
+      "USL": 105,
+      "below_lsl": 4692,
+      "above_usl": 4836,
+      "total_violations": 9528,
+      "pct_below_lsl": 2.346,
+      "pct_above_usl": 2.418,
+      "pct_total": 4.764
+    },
+    "Paste viscosity": {
+      "LSL": 150,
+      "USL": 250,
+      "below_lsl": 2893,
+      "above_usl": 2927,
+      "total_violations": 5820,
+      "pct_below_lsl": 1.4465000000000001,
+      "pct_above_usl": 1.4635,
+      "pct_total": 2.91
+    },
+    "Ambient RH": {
+      "LSL": 30,
+      "USL": 50,
+      "below_lsl": 2788,
+      "above_usl": 2760,
+      "total_violations": 5548,
+      "pct_below_lsl": 1.394,
+      "pct_above_usl": 1.38,
+      "pct_total": 2.774
+    },
+    "Ambient temperature": {
+      "LSL": 20,
+      "USL": 26,
+      "below_lsl": 7751,
+      "above_usl": 8381,
+      "total_violations": 16132,
+      "pct_below_lsl": 3.8754999999999997,
+      "pct_above_usl": 4.1905,
+      "pct_total": 8.065999999999999
+    },
+    "Peak reflow temperature": {
+      "LSL": 250,
+      "USL": 260,
+      "below_lsl": 2094,
+      "above_usl": 2122,
+      "total_violations": 4216,
+      "pct_below_lsl": 1.047,
+      "pct_above_usl": 1.061,
+      "pct_total": 2.108
+    },
+    "Time above liquidus": {
+      "LSL": 45,
+      "USL": 75,
+      "below_lsl": 2155,
+      "above_usl": 2149,
+      "total_violations": 4304,
+      "pct_below_lsl": 1.0775,
+      "pct_above_usl": 1.0745,
+      "pct_total": 2.152
+    }
+  },
+  "defect_mechanism_relationship": {
+    "aperture overfill": {
+      "absent": {
+        "No Defect": 175420,
+        "Open Circuit": 12011,
+        "Solder Bridging": 4077
+      },
+      "present": {
+        "No Defect": 0,
+        "Open Circuit": 0,
+        "Solder Bridging": 8492
+      }
+    },
+    "poor paste transfer": {
+      "absent": {
+        "No Defect": 175420,
+        "Open Circuit": 3842,
+        "Solder Bridging": 12395
+      },
+      "present": {
+        "No Defect": 0,
+        "Open Circuit": 8169,
+        "Solder Bridging": 174
+      }
+    },
+    "excess reflow spreading": {
+      "absent": {
+        "No Defect": 175420,
+        "Open Circuit": 12011,
+        "Solder Bridging": 8340
+      },
+      "present": {
+        "No Defect": 0,
+        "Open Circuit": 0,
+        "Solder Bridging": 4229
+      }
+    },
+    "non coalescence": {
+      "absent": {
+        "No Defect": 175420,
+        "Open Circuit": 7988,
+        "Solder Bridging": 12383
+      },
+      "present": {
+        "No Defect": 0,
+        "Open Circuit": 4023,
+        "Solder Bridging": 186
+      }
+    }
+  },
+  "class_balance": {
+    "minimum_required": 1000,
+    "defects": {
+      "No Defect": {
+        "count": 175420,
+        "ratio": 175.42,
+        "meets_minimum": true
+      },
+      "Solder Bridging": {
+        "count": 12569,
+        "ratio": 12.569,
+        "meets_minimum": true
+      },
+      "Open Circuit": {
+        "count": 12011,
+        "ratio": 12.011,
+        "meets_minimum": true
+      }
+    },
+    "mechanisms": {
+      "aperture overfill": {
+        "count": 8492,
+        "ratio": 8.492,
+        "meets_minimum": true
+      },
+      "excess reflow spreading": {
+        "count": 4229,
+        "ratio": 4.229,
+        "meets_minimum": true
+      },
+      "poor paste transfer": {
+        "count": 8343,
+        "ratio": 8.343,
+        "meets_minimum": true
+      },
+      "non coalescence": {
+        "count": 4209,
+        "ratio": 4.209,
+        "meets_minimum": true
+      }
+    }
+  },
+  "imbalance_metrics": {
+    "defects": {
+      "largest_class": "No Defect",
+      "smallest_class": "Open Circuit",
+      "largest_count": 175420,
+      "smallest_count": 12011,
+      "imbalance_ratio": 14.604945466655566,
+      "severity": "SEVERE"
+    },
+    "mechanisms": {
+      "largest_count": 8492,
+      "smallest_count": 4209,
+      "imbalance_ratio": 2.0175813732478023
+    }
+  }
+}
