@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict
 from app.config.parameter_config import PROCESS_PARAMETERS
-from app.config.generator_config import RISK_CONFIG
+from app.config.generator_config import PARAM_RISK_CONFIG, DEFECT_LABEL_CONFIG
 from app.services.violation_calculator import calculate_all_parameter_risks
 from .label_defects import assign_defects_to_dataframe
 
@@ -39,7 +39,7 @@ def assign_mechanisms_risk_based(df: pd.DataFrame,
     Returns:
         DataFrame with 'mech_causes_risk' column
     """
-    threshold = RISK_CONFIG['mechanism_threshold']
+    threshold = PARAM_RISK_CONFIG['high_risk_threshold']
     
     df = df.copy()
     
@@ -51,8 +51,11 @@ def assign_mechanisms_risk_based(df: pd.DataFrame,
     print(f"Calculating parameter risks for {len(df):,} boards...")
     
     for idx, row in df.iterrows():
-        risks = calculate_all_parameter_risks(row, process_parameters)
-        
+        risks = calculate_all_parameter_risks(
+            df, 
+            idx, 
+            process_parameters
+        )        
         mechanisms = []
         root_causes = []
 
@@ -60,11 +63,10 @@ def assign_mechanisms_risk_based(df: pd.DataFrame,
         # COLLECT ROOT CAUSES (parameters in high-risk zone)
         # ================================================================
         for risk_key, val in risks.items():
-            if val >= RISK_CONFIG['high_risk_threshold']:
-                if "paste volume" in risk_key:
-                    mechanisms.append(risk_key)
-                else:
-                    root_causes.append(risk_key)
+            if val >= threshold:
+                if "paste volume" not in risk_key:
+                    root_causes.append({"name": risk_key, "score": val})
+        root_causes.sort(key=lambda x: x["score"], reverse=True)
         
         # ================================================================
         # APERTURE OVERFILL RULES (risk-based)
@@ -77,16 +79,38 @@ def assign_mechanisms_risk_based(df: pd.DataFrame,
         elif risks['low paste viscosity'] >= threshold and risks['high ambient rh'] >= threshold:
             mechanisms.append('aperture overfill')
         
+        # Rule 3: High Paste Volume
+        elif risks['high paste volume per aperture'] >= threshold:
+            mechanisms.append('aperture overfill')
+        
         # ================================================================
         # POOR PASTE TRANSFER RULES (risk-based)
         # ================================================================
-        # Rule 3: Low stencil OR high viscosity
+        # Rule 4: Low stencil OR high viscosity
         if risks['low stencil thickness'] >= threshold or risks['high paste viscosity'] >= threshold:
             mechanisms.append('poor paste transfer')
         
-        # Rule 4: Low RH AND high viscosity
+        # Rule 5: Low RH AND high viscosity
         elif risks['low ambient rh'] >= threshold and risks['high paste viscosity'] >= threshold:
             mechanisms.append('poor paste transfer')
+        
+        # Rule 6: Low Paste Volume
+        elif risks['low paste volume per aperture'] >= threshold:
+            mechanisms.append('poor paste transfer')
+        
+        # ================================================================
+        # EXCESS REFLOW SPREADING RULES (risk-based)
+        # ================================================================
+        # Rule 7: high peak reflow temperature OR high time above liquidus
+        if risks['high peak reflow temperature'] >= threshold or risks['high time above liquidus'] >= threshold:
+            mechanisms.append('excess reflow spreading')
+        
+        # ================================================================
+        # NON COALESENCE RULES (risk-based)
+        # ================================================================
+        # Rule 8: low peak reflow temperature OR low time above liquidus
+        if risks['low peak reflow temperature'] >= threshold or risks['low time above liquidus'] >= threshold:
+            mechanisms.append('non coalescence')
         
         # ================================================================
         # ASSIGN TO DATAFRAME
@@ -95,7 +119,7 @@ def assign_mechanisms_risk_based(df: pd.DataFrame,
             mech_causes_risk[idx] = "; ".join(mechanisms)
         
         if root_causes:
-            root_causes_risk[idx] = "; ".join(root_causes)
+            root_causes_risk[idx] = "; ".join([r['name'] for r in root_causes])
     
     df['mech causes'] = mech_causes_risk
     df['root causes'] = root_causes_risk
@@ -135,9 +159,9 @@ def create_risk_based_ground_truth(df: pd.DataFrame,
     # Step 3: Assign defects
     df = assign_defects_to_dataframe(
         df,
-        PROCESS_PARAMETERS,
-        mode=RISK_CONFIG['defect_mode'],
-        threshold=RISK_CONFIG['defect_threshold']
+        process_parameters,
+        mode=DEFECT_LABEL_CONFIG['mode'],
+        threshold=DEFECT_LABEL_CONFIG['threshold']
     )
     
     # Statistics
@@ -165,23 +189,12 @@ def create_risk_based_ground_truth(df: pd.DataFrame,
 
 if __name__ == "__main__":
     # Test with sample data
-    
     print("Testing risk-based ground truth generation...")
     print()
-    test_df = pd.read_csv("./app/outputs/synthetic_data_with_temporal_patterns_x2-13.csv")
-    
-    # # Create sample data
-    # test_df = pd.DataFrame({
-    #     'Paste volume per aperture': [0.040, 0.043, 0.044, 0.046],
-    #     'Stencil thickness': [100, 103, 106, 108],
-    #     'Paste viscosity': [200, 180, 160, 150],
-    #     'Ambient RH': [40, 45, 52, 55],
-    #     'Ambient temperature': [23, 24, 25, 26]
-    # })
-    
+    test_df = pd.read_csv("./synthetic_data_factory_ft.csv")
     # Generate risk-based labels
     result_df = create_risk_based_ground_truth(
         test_df,
         PROCESS_PARAMETERS
     )
-    result_df.to_csv("./app/outputs/causal_chain_labelling_8.csv")
+    result_df.to_csv("./app/outputs/causal_chain_labelling_9.csv")

@@ -7,22 +7,16 @@ Each parameter should be justified with citations for dissertation.
 from app.config.parameter_config import PROCESS_PARAMETERS
 
 # ============================================================================
-# DEFECT ASSIGNMENT MODE
+# LABELLING CONFIG
 # ============================================================================
 
-RISK_CONFIG = {
-    'high_risk_threshold': 0.65,     # [NEEDS CITATION] - Threshold for high-risk zone
-    'mechanism_threshold': 0.70,     # Threshold to fire mechanism
-    'defect_mode': 'direct',  # 'probabilistic' or 'threshold'
-    'defect_threshold': 0.65,        # For threshold mode
-    
+PARAM_RISK_CONFIG = {
+    'high_risk_threshold': 0.65, # [NEEDS CITATION] - Threshold for high-risk zone    
     # Justification:
-    # - 70% threshold corresponds to "at specification limit" in risk model
-    # - Matches "critical" risk level from violation calculator
     # - Provides smooth gradient for MLP learning
 }
 
-ASSIGNMENT_CONFIG = {
+DEFECT_LABEL_CONFIG = {
     'mode': 'direct',    # Options: 'probabilistic' or 'threshold'
     'threshold': 0.65,           # [NEEDS CITATION] - Threshold for defect occurrence
     
