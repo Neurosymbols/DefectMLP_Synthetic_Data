@@ -11,8 +11,6 @@ import pandas as pd
 import numpy as np
 import random
 
-from app.config.defect_config import DEFECT_WEIGHTS, PARAMETER_MAPPING, validate_config
-
 # ============================================================================
 # OPTION 1: DIRECT MECHANISM-TO-DEFECT
 # ============================================================================
@@ -52,45 +50,10 @@ def assign_defect_direct(row):
     return "No Defect"
 
 # ============================================================================
-# UNIFIED INTERFACE
-# ============================================================================
-
-def assign_defect_from_probability(row,
-                                  process_parameters,
-                                  mode=None,
-                                  threshold=None,
-                                  random_seed=None):
-    """
-    Unified defect assignment interface
-    
-    Dispatches to either probabilistic or threshold mode based on config
-    
-    Args:
-        row: DataFrame row
-        process_parameters: Spec limits
-        mode: 'probabilistic' or 'threshold' (None = use config)
-        threshold: Threshold value (None = use config)
-        random_seed: For probabilistic mode
-    
-    Returns:
-        Defect label
-    """    
-    # Dispatch to appropriate function
-    if mode == 'direct':
-        return assign_defect_direct(row)
-    else:
-        raise ValueError(f"Unknown mode: {mode}. Use 'probabilistic' or 'threshold'")
-
-
-# ============================================================================
 # DATAFRAME-LEVEL ASSIGNMENT
 # ============================================================================
 
-def assign_defects_to_dataframe(df,
-                               process_parameters,
-                               mode=None,
-                               threshold=None,
-                               random_seed=None):
+def assign_defects_to_dataframe(df):
     """
     Assign defects to entire DataFrame
     
@@ -103,21 +66,10 @@ def assign_defects_to_dataframe(df,
     
     Returns:
         DataFrame with added 'Defect' and 'Defect_Probability' columns
-    """    
-    print(f"\nDefect Assignment Mode: {mode.upper()}")
-    if mode == 'threshold':
-        print(f"  Threshold: {threshold*100:.1f}%")
-    print()
-    
+    """
     # Assign defects based on mode
     df['Defect'] = df.apply(
-        lambda row: assign_defect_from_probability(
-            row,
-            process_parameters,
-            mode=mode,
-            threshold=threshold,
-            random_seed=None  # Don't reseed per row
-        ),
+        lambda row: assign_defect_direct(row),
         axis=1
     )
     

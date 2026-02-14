@@ -16,19 +16,6 @@ PARAM_RISK_CONFIG = {
     # - Provides smooth gradient for MLP learning
 }
 
-DEFECT_LABEL_CONFIG = {
-    'mode': 'direct',    # Options: 'probabilistic' or 'threshold'
-    'threshold': 0.60,           # [NEEDS CITATION] - Threshold for defect occurrence
-    
-    # Mode descriptions:
-    # - 'probabilistic': Random sampling based on probability (realistic variation)
-    # - 'threshold': Deterministic based on threshold (simpler, reproducible)
-    
-    # Threshold justification (if using threshold mode):
-    # [NEEDS CITATION] - Based on process capability studies
-    # Typical range: 0.60-0.75 (60-75% confidence for defect occurrence)
-}
-
 # ============================================================================
 # TEMPORAL PATTERN CONFIGURATION
 # ============================================================================

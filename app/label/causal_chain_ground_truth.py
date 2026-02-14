@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from typing import Dict
 from app.config.parameter_config import PROCESS_PARAMETERS
-from app.config.generator_config import PARAM_RISK_CONFIG, DEFECT_LABEL_CONFIG
+from app.config.generator_config import PARAM_RISK_CONFIG
 from app.services.violation_calculator import calculate_all_parameter_risks
 from .label_defects import assign_defects_to_dataframe
 
@@ -157,12 +157,7 @@ def create_risk_based_ground_truth(df: pd.DataFrame,
     )
 
     # Step 3: Assign defects
-    df = assign_defects_to_dataframe(
-        df,
-        process_parameters,
-        mode=DEFECT_LABEL_CONFIG['mode'],
-        threshold=DEFECT_LABEL_CONFIG['threshold']
-    )
+    df = assign_defects_to_dataframe(df)
     
     # Statistics
     print("\n" + "="*70)

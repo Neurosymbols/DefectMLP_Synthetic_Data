@@ -240,7 +240,7 @@ def sample_with_drift_and_cycles_and_defects(
     
     # Approach 1: Hard labels
     if OUTPUT_CONFIG['perform_labelling']:
-        df = assign_defects_to_dataframe(df, PROCESS_PARAMETERS, random_seed=seed)
+        df = assign_defects_to_dataframe(df)
         
     # ========================================================================
     # Statistics
