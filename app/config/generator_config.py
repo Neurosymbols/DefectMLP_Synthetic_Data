@@ -11,14 +11,14 @@ from app.config.parameter_config import PROCESS_PARAMETERS
 # ============================================================================
 
 PARAM_RISK_CONFIG = {
-    'high_risk_threshold': 0.65, # [NEEDS CITATION] - Threshold for high-risk zone    
+    'high_risk_threshold': 0.60, # [NEEDS CITATION] - Threshold for high-risk zone    
     # Justification:
     # - Provides smooth gradient for MLP learning
 }
 
 DEFECT_LABEL_CONFIG = {
     'mode': 'direct',    # Options: 'probabilistic' or 'threshold'
-    'threshold': 0.65,           # [NEEDS CITATION] - Threshold for defect occurrence
+    'threshold': 0.60,           # [NEEDS CITATION] - Threshold for defect occurrence
     
     # Mode descriptions:
     # - 'probabilistic': Random sampling based on probability (realistic variation)
